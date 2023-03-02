@@ -3,13 +3,13 @@ package com.capitole.cristina.exam.service;
 import com.capitole.cristina.exam.domain.Currency;
 import com.capitole.cristina.exam.domain.Price;
 import com.capitole.cristina.exam.repository.PriceRepository;
-import com.capitole.cristina.exam.repository.PriceRepositoryImpl;
 import com.capitole.cristina.exam.service.exception.PriceNotFoundException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,14 +19,22 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@RunWith(MockitoJUnitRunner.class)
 public class PriceUseCaseTest {
 
-    private final PriceRepository priceRepository = mock(PriceRepositoryImpl.class);
-    private final PriceUseCase priceUseCase = new PriceUseCaseImpl(priceRepository);
+    private PriceUseCase priceUseCase;
+    @Mock
+    private PriceRepository priceRepository;
+
+    @Before
+    public void setup() {
+        priceUseCase = new PriceUseCaseImpl(priceRepository);
+        openMocks(priceUseCase);
+    }
 
     @Test
     public void getPrice_whenPriceExists_thenReturnPrice() {
