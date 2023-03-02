@@ -2,6 +2,7 @@ package com.capitole.cristina.exam.api;
 
 import com.capitole.cristina.exam.domain.Currency;
 import com.capitole.cristina.exam.domain.Price;
+import com.capitole.cristina.exam.domain.PriceFind;
 import com.capitole.cristina.exam.service.PriceUseCase;
 import com.capitole.cristina.exam.service.exception.PriceNotFoundException;
 import org.junit.Test;
@@ -37,16 +38,14 @@ public class PriceControllerTest {
     public void getPrice_whenPriceExists_thenReturnResponseOK() throws Exception {
         Price givenPrice = givenPrice();
 
-        LocalDateTime applicationDateParam = LocalDateTime.parse("2022-03-01T10:00:00");
-        Long productIdParam = 1L;
-        Long brandIdParam = 1L;
+        PriceFind givenPriceFind = givenPriceFind();
 
-        when(priceUseCase.getPrice(applicationDateParam, productIdParam, brandIdParam)).thenReturn(givenPrice);
+        when(priceUseCase.getPrice(givenPriceFind)).thenReturn(givenPrice);
 
         this.mockMvc.perform(get("/prices")
-                        .param("applicationDate", applicationDateParam.toString())
-                        .param("productId", productIdParam.toString())
-                        .param("brandId", brandIdParam.toString())
+                        .param("applicationDate", givenPriceFind.getApplicationDate().toString())
+                        .param("productId", givenPriceFind.getProductId().toString())
+                        .param("brandId", givenPriceFind.getBrandId().toString())
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.productId", is(1)));
@@ -54,16 +53,14 @@ public class PriceControllerTest {
 
     @Test
     public void getPrice_whenPriceDoesNotExist_thenReturnResponseNotFound() throws Exception {
-        LocalDateTime applicationDateParam = LocalDateTime.parse("2022-03-01T10:00:00");
-        Long productIdParam = 1L;
-        Long brandIdParam = 1L;
+        PriceFind givenPriceFind = givenPriceFind();
 
-        when(priceUseCase.getPrice(applicationDateParam, productIdParam, brandIdParam)).thenThrow(new PriceNotFoundException());
+        when(priceUseCase.getPrice(givenPriceFind)).thenThrow(new PriceNotFoundException());
 
         this.mockMvc.perform(get("/prices")
-                        .param("applicationDate", applicationDateParam.toString())
-                        .param("productId", productIdParam.toString())
-                        .param("brandId", brandIdParam.toString())
+                        .param("applicationDate", givenPriceFind.getApplicationDate().toString())
+                        .param("productId", givenPriceFind.getProductId().toString())
+                        .param("brandId", givenPriceFind.getBrandId().toString())
                 )
                 .andExpect(status().isNotFound());
     }
@@ -83,6 +80,14 @@ public class PriceControllerTest {
                 1,
                 new BigDecimal("30"),
                 Currency.EUR
+        );
+    }
+
+    private PriceFind givenPriceFind() {
+        return new PriceFind(
+                LocalDateTime.parse("2022-03-01T10:00:00"),
+                1L,
+                1L
         );
     }
 }

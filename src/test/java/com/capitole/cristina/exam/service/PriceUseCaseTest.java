@@ -2,6 +2,7 @@ package com.capitole.cristina.exam.service;
 
 import com.capitole.cristina.exam.domain.Currency;
 import com.capitole.cristina.exam.domain.Price;
+import com.capitole.cristina.exam.domain.PriceFind;
 import com.capitole.cristina.exam.repository.PriceRepository;
 import com.capitole.cristina.exam.service.exception.PriceNotFoundException;
 import org.junit.Before;
@@ -39,12 +40,10 @@ public class PriceUseCaseTest {
     @Test
     public void getPrice_whenPriceExists_thenReturnPrice() {
         List<Price> givenPrices = givenPrices();
-        LocalDateTime applicationDateParam = LocalDateTime.parse("2022-03-01T10:00:00");
-        Long productIdParam = 1L;
-        Long brandIdParam = 1L;
+        PriceFind givenPriceFind = givenPriceFind();
 
         when(priceRepository.getPrices()).thenReturn(givenPrices);
-        Price price = priceUseCase.getPrice(applicationDateParam, productIdParam, brandIdParam);
+        Price price = priceUseCase.getPrice(givenPriceFind);
 
         verify(priceRepository).getPrices();
         assertThat(price, is(notNullValue()));
@@ -53,13 +52,11 @@ public class PriceUseCaseTest {
 
     @Test
     public void getPrice_whenPriceDoesNotExist_thenThrowPriceNotFoundException() {
-        LocalDateTime applicationDateParam = LocalDateTime.parse("2022-03-01T10:00:00");
-        Long productIdParam = 1L;
-        Long brandIdParam = 1L;
+        PriceFind givenPriceFind = givenPriceFind();
 
         when(priceRepository.getPrices()).thenReturn(List.of());
 
-        Assertions.assertThrows(PriceNotFoundException.class, () -> priceUseCase.getPrice(applicationDateParam, productIdParam, brandIdParam));
+        Assertions.assertThrows(PriceNotFoundException.class, () -> priceUseCase.getPrice(givenPriceFind));
         verify(priceRepository).getPrices();
     }
 
@@ -84,6 +81,14 @@ public class PriceUseCaseTest {
                         new BigDecimal("25.95"),
                         Currency.EUR
                 )
+        );
+    }
+
+    private PriceFind givenPriceFind() {
+        return new PriceFind(
+                LocalDateTime.parse("2022-03-01T10:00:00"),
+                1L,
+                1L
         );
     }
 }

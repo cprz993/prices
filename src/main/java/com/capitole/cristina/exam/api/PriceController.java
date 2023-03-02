@@ -1,6 +1,7 @@
 package com.capitole.cristina.exam.api;
 
 import com.capitole.cristina.exam.api.dto.PriceResponse;
+import com.capitole.cristina.exam.domain.PriceFind;
 import com.capitole.cristina.exam.service.PriceUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,6 +29,8 @@ public class PriceController {
             @RequestParam Long productId,
             @RequestParam Long brandId
     ) {
-        return ResponseEntity.ok(toPriceResponse(priceUseCase.getPrice(applicationDate, productId, brandId)));
+        return ResponseEntity.ok(toPriceResponse(priceUseCase.getPrice(
+                new PriceFind(applicationDate, productId, brandId)))
+        );
     }
 }
