@@ -73,6 +73,7 @@ public class PriceControllerTest {
     private Price givenPrice() {
         return new Price(
                 1L,
+                1L,
                 LocalDateTime.parse("2022-03-01T10:00:00"),
                 LocalDateTime.parse("2022-03-01T10:00:00").plusDays(1),
                 1,

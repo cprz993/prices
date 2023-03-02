@@ -42,10 +42,18 @@ public class PriceUseCaseTest {
         List<Price> givenPrices = givenPrices();
         PriceFind givenPriceFind = givenPriceFind();
 
-        when(priceRepository.getPrices()).thenReturn(givenPrices);
+        when(priceRepository.getPrices(
+                givenPriceFind.getApplicationDate(),
+                givenPriceFind.getProductId(),
+                givenPriceFind.getBrandId())
+        ).thenReturn(givenPrices);
+
         Price price = priceUseCase.getPrice(givenPriceFind);
 
-        verify(priceRepository).getPrices();
+        verify(priceRepository).getPrices(givenPriceFind.getApplicationDate(),
+                givenPriceFind.getProductId(),
+                givenPriceFind.getBrandId()
+        );
         assertThat(price, is(notNullValue()));
         assertThat(price.getPrice(), is(new BigDecimal("25.95")));
     }
@@ -54,15 +62,24 @@ public class PriceUseCaseTest {
     public void getPrice_whenPriceDoesNotExist_thenThrowPriceNotFoundException() {
         PriceFind givenPriceFind = givenPriceFind();
 
-        when(priceRepository.getPrices()).thenReturn(List.of());
+        when(priceRepository.getPrices(
+                givenPriceFind.getApplicationDate(),
+                givenPriceFind.getProductId(),
+                givenPriceFind.getBrandId())
+        ).thenReturn(List.of());
 
         Assertions.assertThrows(PriceNotFoundException.class, () -> priceUseCase.getPrice(givenPriceFind));
-        verify(priceRepository).getPrices();
+        verify(priceRepository).getPrices(
+                givenPriceFind.getApplicationDate(),
+                givenPriceFind.getProductId(),
+                givenPriceFind.getBrandId()
+        );
     }
 
     private List<Price> givenPrices() {
         return asList(
                 new Price(
+                        1L,
                         1L,
                         LocalDateTime.parse("2022-03-01T10:00:00"),
                         LocalDateTime.parse("2022-03-01T10:00:00").plusDays(1),
@@ -72,6 +89,7 @@ public class PriceUseCaseTest {
                         new BigDecimal("30"),
                         Currency.EUR
                 ), new Price(
+                        2L,
                         1L,
                         LocalDateTime.parse("2022-03-01T10:00:00"),
                         LocalDateTime.parse("2022-03-01T10:00:00").plusDays(1),

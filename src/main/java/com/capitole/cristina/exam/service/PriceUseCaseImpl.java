@@ -26,7 +26,10 @@ public class PriceUseCaseImpl implements PriceUseCase {
     @Override
     public Price getPrice(PriceFind priceFind) throws PriceNotFoundException {
         return priceRepository
-                .getPrices()
+                .getPrices(
+                        priceFind.getApplicationDate(),
+                        priceFind.getProductId(),
+                        priceFind.getBrandId())
                 .stream()
                 .max(
                         Comparator.comparing(Price::getPriority)
