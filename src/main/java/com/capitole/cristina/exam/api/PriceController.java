@@ -4,12 +4,12 @@ import com.capitole.cristina.exam.api.dto.PriceResponse;
 import com.capitole.cristina.exam.service.PriceUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+
+import static com.capitole.cristina.exam.api.dto.PriceResponseMapper.toPriceResponse;
 
 @RestController
 @RequestMapping(value = "prices")
@@ -23,12 +23,11 @@ public class PriceController {
     }
 
     @GetMapping
-    public PriceResponse getPrice(
-        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd-hh.mm.ss") LocalDateTime applicationDate,
-        @RequestParam Long productId,
-        @RequestParam Long brandId
+    public @ResponseBody ResponseEntity<PriceResponse> getPrice(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd-hh.mm.ss") LocalDateTime applicationDate,
+            @RequestParam Long productId,
+            @RequestParam Long brandId
     ) {
-        //TODO: call price service to retrieve price information
-        return PriceResponse.builder().build();
+        return ResponseEntity.ok(toPriceResponse(priceUseCase.getPrice(applicationDate, productId, brandId)));
     }
 }
