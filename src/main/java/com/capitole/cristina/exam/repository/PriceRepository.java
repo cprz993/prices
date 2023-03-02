@@ -6,5 +6,7 @@ import org.springframework.data.repository.Repository;
 import java.util.List;
 
 public interface PriceRepository extends Repository<Price, Long> {
+
+
     List<Price> getPrices();
 }
