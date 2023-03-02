@@ -5,5 +5,5 @@ import com.capitole.cristina.exam.domain.Price;
 import java.util.List;
 
 public interface PriceRepository {
-    List<Price> getPrice();
+    List<Price> getPrices();
 }

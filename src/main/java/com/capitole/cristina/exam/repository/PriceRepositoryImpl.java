@@ -8,7 +8,7 @@ import java.util.List;
 @Component
 public class PriceRepositoryImpl implements PriceRepository{
     @Override
-    public List<Price> getPrice() {
+    public List<Price> getPrices() {
         return null;
     }
 }

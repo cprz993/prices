@@ -4,7 +4,9 @@ import com.capitole.cristina.exam.domain.Currency;
 import com.capitole.cristina.exam.domain.Price;
 import com.capitole.cristina.exam.repository.PriceRepository;
 import com.capitole.cristina.exam.repository.PriceRepositoryImpl;
+import com.capitole.cristina.exam.service.exception.PriceNotFoundException;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -16,10 +18,8 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.isNotNull;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,34 +29,30 @@ public class PriceUseCaseTest {
     private final PriceUseCase priceUseCase = new PriceUseCaseImpl(priceRepository);
 
     @Test
-    public void getPrice_whenPriceExists_thenReturnPrice() throws Exception {
+    public void getPrice_whenPriceExists_thenReturnPrice() {
         List<Price> givenPrices = givenPrices();
-
         LocalDateTime applicationDateParam = LocalDateTime.parse("2022-03-01T10:00:00");
         Long productIdParam = 1L;
         Long brandIdParam = 1L;
 
-        when(priceRepository.getPrice()).thenReturn(givenPrices);
-
+        when(priceRepository.getPrices()).thenReturn(givenPrices);
         Price price = priceUseCase.getPrice(applicationDateParam, productIdParam, brandIdParam);
 
-        assertThat(price, isNotNull());
+        verify(priceRepository).getPrices();
+        assertThat(price, is(notNullValue()));
         assertThat(price.getPrice(), is(new BigDecimal("25.95")));
     }
 
     @Test
-    public void getPrice_whenPriceDoesNotExist_thenThrowPriceNotFoundException() throws Exception {
-        List<Price> givenPrices = givenPrices();
-
+    public void getPrice_whenPriceDoesNotExist_thenThrowPriceNotFoundException() {
         LocalDateTime applicationDateParam = LocalDateTime.parse("2022-03-01T10:00:00");
         Long productIdParam = 1L;
         Long brandIdParam = 1L;
 
-        when(priceRepository.getPrice()).thenReturn(null);
+        when(priceRepository.getPrices()).thenReturn(List.of());
 
-        Price price = priceUseCase.getPrice(applicationDateParam, productIdParam, brandIdParam);
-
-        assertThat(price, isNull());
+        Assertions.assertThrows(PriceNotFoundException.class, () -> priceUseCase.getPrice(applicationDateParam, productIdParam, brandIdParam));
+        verify(priceRepository).getPrices();
     }
 
     private List<Price> givenPrices() {

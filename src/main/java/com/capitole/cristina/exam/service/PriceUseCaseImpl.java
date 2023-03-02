@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 
 @Service
 @Validated
@@ -24,6 +25,11 @@ public class PriceUseCaseImpl implements PriceUseCase {
 
     @Override
     public Price getPrice(LocalDateTime applicationDate, Long productId, Long brandId) throws PriceNotFoundException {
-        return null;
+        return priceRepository
+                .getPrices()
+                .stream()
+                .max(
+                        Comparator.comparing(Price::getPriority)
+                ).orElseThrow(PriceNotFoundException::new);
     }
 }
