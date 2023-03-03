@@ -1,8 +1,8 @@
-package com.capitole.cristina.exam.api;
+package com.capitole.cristina.exam.infrastructure.api;
 
-import com.capitole.cristina.exam.api.dto.PriceResponse;
-import com.capitole.cristina.exam.domain.PriceFind;
-import com.capitole.cristina.exam.service.PriceUseCase;
+import com.capitole.cristina.exam.domain.model.PriceFind;
+import com.capitole.cristina.exam.infrastructure.api.dto.PriceResponse;
+import com.capitole.cristina.exam.infrastructure.port.FindPriorityPriceUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
-import static com.capitole.cristina.exam.api.dto.PriceResponseMapper.toPriceResponse;
+import static com.capitole.cristina.exam.infrastructure.api.dto.PriceResponseMapper.toPriceResponse;
 
 @RestController
 @RequestMapping(value = "prices")
 public class PriceController {
 
-    PriceUseCase priceUseCase;
+    private final FindPriorityPriceUseCase priceUseCase;
 
     @Autowired
-    public PriceController(PriceUseCase priceUseCase) {
-        this.priceUseCase = priceUseCase;
+    public PriceController(FindPriorityPriceUseCase findPriorityPriceUseCase) {
+        this.priceUseCase = findPriorityPriceUseCase;
     }
 
     @GetMapping

@@ -1,4 +1,4 @@
-package com.capitole.cristina.exam.domain;
+package com.capitole.cristina.exam.domain.model;
 
 import lombok.Value;
 

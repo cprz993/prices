@@ -1,10 +1,10 @@
-package com.capitole.cristina.exam.api;
+package com.capitole.cristina.exam.infrastructure.api;
 
-import com.capitole.cristina.exam.domain.Currency;
-import com.capitole.cristina.exam.domain.Price;
-import com.capitole.cristina.exam.domain.PriceFind;
-import com.capitole.cristina.exam.service.PriceUseCase;
-import com.capitole.cristina.exam.service.exception.PriceNotFoundException;
+import com.capitole.cristina.exam.domain.model.Currency;
+import com.capitole.cristina.exam.domain.model.Price;
+import com.capitole.cristina.exam.domain.model.PriceFind;
+import com.capitole.cristina.exam.infrastructure.port.FindPriorityPriceUseCase;
+import com.capitole.cristina.exam.domain.exception.PriceNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,7 +32,7 @@ public class PriceControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private PriceUseCase priceUseCase;
+    private FindPriorityPriceUseCase priceUseCase;
 
     @Test
     public void getPrice_whenPriceExists_thenReturnResponseOK() throws Exception {
@@ -71,17 +71,17 @@ public class PriceControllerTest {
     }
 
     private Price givenPrice() {
-        return new Price(
-                1L,
-                1L,
-                LocalDateTime.parse("2022-03-01T10:00:00"),
-                LocalDateTime.parse("2022-03-01T10:00:00").plusDays(1),
-                1,
-                1L,
-                1,
-                new BigDecimal("30"),
-                Currency.EUR
-        );
+        return Price.builder()
+                .id(1L)
+                .brandId(1L)
+                .startDate(LocalDateTime.parse("2022-03-01T10:00:00"))
+                .endDate(LocalDateTime.parse("2022-03-01T10:00:00").plusDays(1))
+                .priceList(1)
+                .productId(1L)
+                .priority(0)
+                .price(BigDecimal.valueOf(30))
+                .currency(Currency.EUR)
+                .build();
     }
 
     private PriceFind givenPriceFind() {

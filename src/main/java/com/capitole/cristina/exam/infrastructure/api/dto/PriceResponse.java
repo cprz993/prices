@@ -1,4 +1,4 @@
-package com.capitole.cristina.exam.api.dto;
+package com.capitole.cristina.exam.infrastructure.api.dto;
 
 import lombok.Builder;
 import lombok.Value;

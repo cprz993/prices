@@ -1,13 +1,13 @@
-package com.capitole.cristina.exam.service;
+package com.capitole.cristina.exam.infrastructure.service;
 
-import com.capitole.cristina.exam.domain.Currency;
-import com.capitole.cristina.exam.domain.Price;
-import com.capitole.cristina.exam.domain.PriceFind;
-import com.capitole.cristina.exam.repository.PriceRepository;
-import com.capitole.cristina.exam.service.exception.PriceNotFoundException;
+import com.capitole.cristina.exam.domain.model.Currency;
+import com.capitole.cristina.exam.domain.model.Price;
+import com.capitole.cristina.exam.domain.model.PriceFind;
+import com.capitole.cristina.exam.infrastructure.port.GetPrices;
+import com.capitole.cristina.exam.infrastructure.repository.PriceRepository;
+import com.capitole.cristina.exam.infrastructure.repository.entity.PriceEntity;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -18,57 +18,37 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PriceUseCaseTest {
+public class GetPricesTest {
 
-    private PriceUseCase priceUseCase;
+    private GetPrices getPrices;
     @Mock
     private PriceRepository priceRepository;
 
     @Before
     public void setup() {
-        priceUseCase = new PriceUseCaseImpl(priceRepository);
-        openMocks(priceUseCase);
+        getPrices = new GetPricesImpl(priceRepository);
+        openMocks(priceRepository);
     }
 
     @Test
-    public void getPrice_whenPriceExists_thenReturnPrice() {
-        List<Price> givenPrices = givenPrices();
+    public void get_whenPriceFindExists_thenReturnPrices() {
+        List<PriceEntity> givenPriceEntities = givenPriceEntities();
         PriceFind givenPriceFind = givenPriceFind();
 
         when(priceRepository.getPrices(
                 givenPriceFind.getApplicationDate(),
                 givenPriceFind.getProductId(),
                 givenPriceFind.getBrandId())
-        ).thenReturn(givenPrices);
+        ).thenReturn(givenPriceEntities);
+        List<Price> prices = getPrices.get(givenPriceFind);
 
-        Price price = priceUseCase.getPrice(givenPriceFind);
-
-        verify(priceRepository).getPrices(givenPriceFind.getApplicationDate(),
-                givenPriceFind.getProductId(),
-                givenPriceFind.getBrandId()
-        );
-        assertThat(price, is(notNullValue()));
-        assertThat(price.getPrice(), is(new BigDecimal("25.95")));
-    }
-
-    @Test
-    public void getPrice_whenPriceDoesNotExist_thenThrowPriceNotFoundException() {
-        PriceFind givenPriceFind = givenPriceFind();
-
-        when(priceRepository.getPrices(
-                givenPriceFind.getApplicationDate(),
-                givenPriceFind.getProductId(),
-                givenPriceFind.getBrandId())
-        ).thenReturn(List.of());
-
-        Assertions.assertThrows(PriceNotFoundException.class, () -> priceUseCase.getPrice(givenPriceFind));
+        assertThat(prices, not(empty()));
         verify(priceRepository).getPrices(
                 givenPriceFind.getApplicationDate(),
                 givenPriceFind.getProductId(),
@@ -76,9 +56,29 @@ public class PriceUseCaseTest {
         );
     }
 
-    private List<Price> givenPrices() {
-        return asList(
-                new Price(
+    @Test
+    public void get_whenPriceFindDoesNotExist_thenThrowPriceNotFoundException() {
+        PriceFind givenPriceFind = givenPriceFind();
+
+        when(priceRepository.getPrices(
+                givenPriceFind.getApplicationDate(),
+                givenPriceFind.getProductId(),
+                givenPriceFind.getBrandId())
+        ).thenReturn(List.of());
+        List<Price> prices = getPrices.get(givenPriceFind);
+
+        assertThat(prices, is(List.of()));
+        verify(priceRepository).getPrices(
+                givenPriceFind.getApplicationDate(),
+                givenPriceFind.getProductId(),
+                givenPriceFind.getBrandId()
+        );
+    }
+
+
+    private List<PriceEntity> givenPriceEntities() {
+        return List.of(
+                new PriceEntity(
                         1L,
                         1L,
                         LocalDateTime.parse("2022-03-01T10:00:00"),
@@ -86,21 +86,12 @@ public class PriceUseCaseTest {
                         1,
                         1L,
                         0,
-                        new BigDecimal("30"),
-                        Currency.EUR
-                ), new Price(
-                        2L,
-                        1L,
-                        LocalDateTime.parse("2022-03-01T10:00:00"),
-                        LocalDateTime.parse("2022-03-01T10:00:00").plusDays(1),
-                        2,
-                        1L,
-                        1,
-                        new BigDecimal("25.95"),
+                        BigDecimal.valueOf(30),
                         Currency.EUR
                 )
         );
     }
+
 
     private PriceFind givenPriceFind() {
         return new PriceFind(
@@ -109,4 +100,5 @@ public class PriceUseCaseTest {
                 1L
         );
     }
+
 }

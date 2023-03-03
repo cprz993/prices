@@ -1,6 +1,6 @@
-package com.capitole.cristina.exam.api;
+package com.capitole.cristina.exam.infrastructure.api;
 
-import com.capitole.cristina.exam.service.exception.PriceNotFoundException;
+import com.capitole.cristina.exam.domain.exception.PriceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
